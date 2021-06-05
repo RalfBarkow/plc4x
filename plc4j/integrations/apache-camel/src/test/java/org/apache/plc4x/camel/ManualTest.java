@@ -21,7 +21,6 @@ package org.apache.plc4x.camel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
 import org.apache.camel.main.MainListenerSupport;
-import org.apache.camel.main.MainSupport;
 
 import java.util.Date;
 
@@ -40,7 +39,7 @@ public class ManualTest {
         // bind MyBean into the registry
         main.bind("foo", new MyBean());
         // add routes
-        main.addRouteBuilder(new MyRouteBuilder());
+        main.addRoutesBuilder(new MyRouteBuilder());
         // add event listener
         main.addMainListener(new Events());
         // set the properties from a file
@@ -68,14 +67,7 @@ public class ManualTest {
 
     public static class Events extends MainListenerSupport {
 
-        @Override
-        public void afterStart(MainSupport main) {
-            System.out.println("MainExample with Camel is now started!");
-        }
 
-        @Override
-        public void beforeStop(MainSupport main) {
-            System.out.println("MainExample with Camel is now being stopped!");
-        }
+
     }
 }

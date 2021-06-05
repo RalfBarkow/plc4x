@@ -23,7 +23,8 @@ import org.apache.plc4x.java.api.PlcConnection;
 import org.apache.plc4x.java.api.authentication.PlcAuthentication;
 import org.apache.plc4x.java.api.exceptions.PlcConnectionException;
 import org.apache.plc4x.java.opcua.connection.OpcuaConnectionFactory;
-import org.apache.plc4x.java.spi.PlcDriver;
+import org.apache.plc4x.java.api.PlcDriver;
+import org.apache.plc4x.java.opcua.protocol.OpcuaField;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -35,25 +36,17 @@ import java.util.regex.Pattern;
  * Implementation of the OPC UA protocol, based on:
  * - Eclipse Milo (https://github.com/eclipse/milo)
  *
- * @author Matthias Milan Stlrljic
- * Created by Matthias Milan Stlrljic on 10.05.2019
+ * Created by Matthias Milan Strljic on 10.05.2019
  */
 public class OpcuaPlcDriver implements PlcDriver {
 
 
-
-    public static final Pattern INET_ADDRESS_PATTERN = Pattern.compile("tcp://(?<host>[\\w.-]+)(:(?<port>\\d*))?");
-    public static final Pattern OPCUA_URI_PATTERN = Pattern.compile("^opcua:(" + INET_ADDRESS_PATTERN + ")?" + "(?<params>/[\\w/]+)?");
+    public static final Pattern INET_ADDRESS_PATTERN = Pattern.compile("(:(?<transport>tcp))?://(?<host>[\\w.-]+)(:(?<port>\\d*))?");
+    public static final Pattern OPCUA_URI_PARAM_PATTERN = Pattern.compile("(?<param>[(\\?|\\&)([^=]+)\\=([^&]+)]+)?"); //later used for regex filtering of the params
+    public static final Pattern OPCUA_URI_PATTERN = Pattern.compile("^opcua" + INET_ADDRESS_PATTERN + "(?<params>[\\w/=?&]+)?");
     private static final int requestTimeout = 10000;
-    private OpcuaConnectionFactory opcuaConnectionFactory;
+    private OpcuaConnectionFactory opcuaConnectionFactory = new OpcuaConnectionFactory();
 
-    public OpcuaPlcDriver() {
-        this.opcuaConnectionFactory = new OpcuaConnectionFactory();
-    }
-
-    public OpcuaPlcDriver(OpcuaConnectionFactory opcuaConnectionFactory) {
-        this.opcuaConnectionFactory = opcuaConnectionFactory;
-    }
 
     @Override
     public String getProtocolCode() {
@@ -66,18 +59,18 @@ public class OpcuaPlcDriver implements PlcDriver {
     }
 
     @Override
-    public PlcConnection connect(String url) throws PlcConnectionException {
+    public PlcConnection getConnection(String url) throws PlcConnectionException {
         Matcher matcher = OPCUA_URI_PATTERN.matcher(url);
 
         if (!matcher.matches()) {
             throw new PlcConnectionException(
-                "Connection url doesn't match the format 'opcua:{type}//{port|host}'");
+                "Connection url doesn't match the format 'opcua:{type}//{host|port}'");
         }
 
         String host = matcher.group("host");
         String portString = matcher.group("port");
         Integer port = StringUtils.isNotBlank(portString) ? Integer.parseInt(portString) : null;
-        String params = matcher.group("params") != null ? matcher.group("params").substring(1) : null;
+        String params = matcher.group("params") != null ? matcher.group("params").substring(1) : "";
 
         try {
             return opcuaConnectionFactory.opcuaTcpPlcConnectionOf(InetAddress.getByName(host), port, params, requestTimeout);
@@ -87,8 +80,13 @@ public class OpcuaPlcDriver implements PlcDriver {
     }
 
     @Override
-    public PlcConnection connect(String url, PlcAuthentication authentication) throws PlcConnectionException {
+    public PlcConnection getConnection(String url, PlcAuthentication authentication) throws PlcConnectionException {
         throw new PlcConnectionException("opcua does not support Auth at this state");
+    }
+
+    @Override
+    public OpcuaField prepareField(String query){
+        return OpcuaField.of(query);
     }
 
 }

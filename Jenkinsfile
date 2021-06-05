@@ -38,16 +38,18 @@ pipeline {
         MVN_LOCAL_REPO_OPT = '-Dmaven.repo.local=.repository'
         // Test failures will be handled by the jenkins junit steps and mark the build as unstable.
         MVN_TEST_FAIL_IGNORE = '-Dmaven.test.failure.ignore=true'
+
+        SONARCLOUD_PARAMS = "-Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=apache -Dsonar.projectKey=apache_plc4x -Dsonar.branch.name=develop"
     }
 
     tools {
-        maven 'Maven 3 (latest)'
-        jdk 'JDK 1.8 (latest)'
+        maven 'maven_3_latest'
+        jdk 'jdk_11_latest'
     }
 
     options {
         // Kill this job after one hour.
-        timeout(time: 2, unit: 'HOURS')
+        timeout(time: 24, unit: 'HOURS')
         // When we have test-fails e.g. we don't need to run the remaining steps
         skipStagesAfterUnstable()
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '3'))
@@ -75,6 +77,14 @@ pipeline {
             }
         }
 
+        stage('Update check') {
+            steps {
+                echo 'checking for update'
+                sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check versions:display-plugin-updates'
+                sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check versions:display-dependency-updates'
+            }
+        }
+
         stage('Build') {
             when {
                 expression {
@@ -83,7 +93,9 @@ pipeline {
             }
             steps {
                 echo 'Building'
-                sh 'mvn -P${JENKINS_PROFILE},development,with-cpp,with-java,with-dotnet,with-python,with-proxies,with-sandbox ${MVN_TEST_FAIL_IGNORE} ${MVN_LOCAL_REPO_OPT} clean install'
+                //sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-sandbox,with-c,with-cpp,with-boost,with-dotnet,with-python,with-proxies ${MVN_TEST_FAIL_IGNORE} ${MVN_LOCAL_REPO_OPT} clean install'
+                //sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-sandbox,with-go ${MVN_TEST_FAIL_IGNORE} ${MVN_LOCAL_REPO_OPT} clean install'
+                sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-sandbox,with-c,with-go ${MVN_TEST_FAIL_IGNORE} ${MVN_LOCAL_REPO_OPT} clean install'
             }
             post {
                 always {
@@ -106,7 +118,9 @@ pipeline {
 
                 // We'll deploy to a relative directory so we can save
                 // that and deploy in a later step on a different node
-                sh 'mvn -P${JENKINS_PROFILE},development,with-java,with-dotnet,with-python,with-proxies,with-sandbox ${MVN_TEST_FAIL_IGNORE} ${JQASSISTANT_NEO4J_VERSION} -DaltDeploymentRepository=snapshot-repo::default::file:./local-snapshots-dir clean deploy'
+                //sh 'mvn -U -P${JENKINS_PROFILE},skip-prerequisite-check,development,with-sandbox,with-c,with-cpp,with-boost,with-dotnet,with-python,with-proxies ${MVN_TEST_FAIL_IGNORE} ${JQASSISTANT_NEO4J_VERSION} -DaltDeploymentRepository=snapshot-repo::default::file:./local-snapshots-dir clean deploy'
+                //sh 'mvn -U -P${JENKINS_PROFILE},skip-prerequisite-check,development,with-sandbox,with-go ${MVN_TEST_FAIL_IGNORE} ${JQASSISTANT_NEO4J_VERSION} -DaltDeploymentRepository=snapshot-repo::default::file:./local-snapshots-dir clean deploy'
+                sh 'mvn -U -P${JENKINS_PROFILE},skip-prerequisite-check,with-sandbox,with-c,with-go ${MVN_TEST_FAIL_IGNORE} ${JQASSISTANT_NEO4J_VERSION} -DaltDeploymentRepository=snapshot-repo::default::file:./local-snapshots-dir clean deploy'
 
                 // Stash the build results so we can deploy them on another node
                 stash name: 'plc4x-build-snapshots', includes: 'local-snapshots-dir/**'
@@ -124,9 +138,10 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                echo 'Checking Code Quality'
-                withSonarQubeEnv('ASF Sonar Analysis') {
-                    sh 'mvn -P${JENKINS_PROFILE},with-java,with-dotnet,with-python,with-proxies sonar:sonar'
+                echo 'Checking Code Quality on SonarCloud'
+                withCredentials([string(credentialsId: 'chris-sonarcloud-token', variable: 'SONAR_TOKEN')]) {
+                    //sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-python,with-proxies,with-sandbox sonar:sonar ${SONARCLOUD_PARAMS} -Dsonar.login=${SONAR_TOKEN}'
+                    sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-c,with-go,with-sandbox sonar:sonar ${SONARCLOUD_PARAMS} -Dsonar.login=${SONAR_TOKEN}'
                 }
             }
         }
@@ -138,7 +153,9 @@ pipeline {
             // Only the official build nodes have the credentials to deploy setup.
             agent {
                 node {
-                    label 'ubuntu'
+                    // TODO: Disabled as H50 seems to be the only node with this label and it's currently offline for quite some time.
+                    // label 'nexus-deploy'
+                    label 'ubuntu && !H50'
                 }
             }
             steps {
@@ -167,7 +184,8 @@ pipeline {
             }
             steps {
                 echo 'Building Site'
-                sh 'mvn -P${JENKINS_PROFILE} -P${JENKINS_PROFILE},with-java,with-dotnet,with-python,with-proxies site'
+                //sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-proxies site'
+                sh 'mvn -Djava.version=1.8 -P${JENKINS_PROFILE},skip-prerequisite-check site -X -pl .'
             }
         }
 
@@ -178,11 +196,12 @@ pipeline {
             steps {
                 echo 'Staging Site'
                 // Build a directory containing the aggregated website.
-                sh 'mvn -P${JENKINS_PROFILE} site:stage'
+                //sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check,with-proxies site:stage'
+                sh 'mvn -P${JENKINS_PROFILE},skip-prerequisite-check site:stage -pl .'
                 // Make sure the script is executable.
                 sh 'chmod +x tools/clean-site.sh'
                 // Remove some redundant resources, which shouldn't be required.
-                sh 'tools/clean-site.sh'
+                //sh 'tools/clean-site.sh'
                 // Stash the generated site so we can publish it on the 'git-website' node.
                 stash includes: 'target/staging/**/*', name: 'plc4x-site'
             }
@@ -279,14 +298,14 @@ Is back to normal.
 
         always {
             script {
-                if(env.BRANCH_NAME == "master") {
+                if(env.BRANCH_NAME == "release") {
                     // Double check if something was really changed as sometimes the
                     // build just runs without any changes.
                     if(currentBuild.changeSets.size() > 0) {
                         emailext(
-                            subject: "[COMMIT-TO-MASTER]: A commit to the master branch was made'",
+                            subject: "[COMMIT-TO-RELEASE]: A commit to the release branch was made'",
                             body: """
-COMMIT-TO-MASTER: A commit to the master branch was made:
+COMMIT-TO-RELEASE: A commit to the release branch was made:
 
 Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BRANCH_NAME}] [${env.BUILD_NUMBER}]</a>"
 """,

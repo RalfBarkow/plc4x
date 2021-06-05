@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.plc4x</groupId>
     <artifactId>plc4x-parent</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.plc4x.sandbox</groupId>
@@ -35,25 +35,78 @@
   <description>Place where new stuff is located before it is regarded production-quality.</description>
 
   <modules>
-    <module>dynamic-driver-base</module>
-    <module>dynamic-driver-s7</module>
+    <module>code-gen</module>
+    <module>discovery</module>
+    <module>plc-simulator</module>
+
+    <module>test-java-bacnetip-driver</module>
+    <module>test-java-df1-driver</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-scxml2</artifactId>
-        <!-- Materialized version -->
-        <version>2.0-20190516.183044-86</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <build>
+    <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <configuration>
+            <usedDependencies combine.children="append">
+                <usedDependency>org.slf4j:log4j-over-slf4j</usedDependency>
+            </usedDependencies>
+          </configuration>
+        </plugin>
+
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- JUnit 5 Support -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-test-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <!-- Build PLC4X including the C++ modules -->
+    <profile>
+      <id>with-cpp</id>
+      <modules>
+        <module>plc4cpp</module>
+      </modules>
+    </profile>
+
+    <!-- Build PLC4X including the .Net modules -->
+    <profile>
+      <id>with-dotnet</id>
+      <modules>
+        <module>plc4net</module>
+      </modules>
+    </profile>
+
+    <!-- Build PLC4X including the Python modules -->
+    <profile>
+      <id>with-python</id>
+      <modules>
+        <module>plc4py</module>
+      </modules>
+    </profile>
+
+  </profiles>
 
 </project>

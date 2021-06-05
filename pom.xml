@@ -24,12 +24,12 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>21</version>
+    <version>23</version>
   </parent>
 
   <groupId>org.apache.plc4x</groupId>
   <artifactId>plc4x-parent</artifactId>
-  <version>0.5.0-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PLC4X</name>
@@ -44,7 +44,6 @@
     <connection>scm:git:https://gitbox.apache.org/repos/asf/plc4x.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/plc4x.git</developerConnection>
     <url>https://github.com/apache/plc4x</url>
-    <tag>rel/0.4</tag>
   </scm>
 
   <!-- Only configure the site distribution as the rest is handled by the apache parent -->
@@ -70,7 +69,7 @@
     </mailingList>
     <mailingList>
       <name>PLC4X Commits List</name>
-      <subscribe>mailto:commit-subscribe@plc4x.apache.org</subscribe>
+      <subscribe>mailto:commits-subscribe@plc4x.apache.org</subscribe>
       <unsubscribe>mailto:commits-unsubscribe@plc4x.apache.org</unsubscribe>
       <post>mailto:commits@plc4x.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/plc4x-commits/</archive>
@@ -86,8 +85,6 @@
 
   <properties>
     <!--
-      3.0.5 would have been enough, but special plugins require newer Maven versions:
-      At least 3.2 required for jqassistant-maven-plugin
       At least 3.3.3 required for camel-package-maven-plugin
     -->
     <maven.version>3.3.3</maven.version>
@@ -97,170 +94,125 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputencoding>UTF-8</project.reporting.outputencoding>
 
-    <!-- URL of the ASF SonarQube server -->
-    <sonar.host.url>https://builds.apache.org/analysis</sonar.host.url>
+    <!-- Timestamp for the reproducible builds -->
+    <project.build.outputTimestamp>2021-01-25T11:31:18Z</project.build.outputTimestamp>
+
     <!-- Exclude all generated code -->
     <sonar.exclusions>**/generated-sources</sonar.exclusions>
+    <sonar.cfamily.build-wrapper-output>${project.basedir}/plc4c/target/build-wrapper-output</sonar.cfamily.build-wrapper-output>
+    <sonar.cfamily.threads>1</sonar.cfamily.threads>
+    <sonar.cfamily.cache.enabled>false</sonar.cfamily.cache.enabled>
 
-    <asm.version>5.0.4</asm.version>
-    <assertj.version>3.11.1</assertj.version>
-    <bouncycastle.version>1.60</bouncycastle.version>
-    <boost.version>1.70.0</boost.version>
-    <boost.version.underline-short>1_70</boost.version.underline-short>
+    <plc4x-code-generation.version>1.5.0-SNAPSHOT</plc4x-code-generation.version>
+
+    <antlr.version>4.9.1</antlr.version>
+    <apiguardian.version>1.1.0</apiguardian.version>
+    <assertj.version>3.18.1</assertj.version>
+    <awaitility.version>3.0.0</awaitility.version>
+    <!-- TODO: the currently available version is 2.0.5 and anything above 1.4.3 is no longer compatible with our code -->
+    <bit-io.version>1.4.3</bit-io.version>
+    <bouncycastle.version>1.67</bouncycastle.version>
+    <boost.version>1.76.0</boost.version>
+    <boost.version.underline-short>1_76</boost.version.underline-short>
     <boost.version.underline>${boost.version.underline-short}_0</boost.version.underline>
-    <byte-buddy.version>1.9.10</byte-buddy.version>
-    <commons-codec.version>1.11</commons-codec.version>
-    <commons-collections4.version>4.1</commons-collections4.version>
-    <commons-configuration2.version>2.2</commons-configuration2.version>
-    <commons-io.version>2.6</commons-io.version>
-    <commons-lang.version>2.6</commons-lang.version>
-    <commons-lang3.version>3.7</commons-lang3.version>
-    <commons-math3.version>3.5</commons-math3.version>
-    <commons-pool2.version>2.6.0</commons-pool2.version>
-    <commons-text.version>1.4</commons-text.version>
-    <crc.version>1.0.1</crc.version>
-    <daffodil.version>2.3.0</daffodil.version>
-    <elasticsearch.version>7.0.1</elasticsearch.version>
-    <equalsverifier.version>3.0.2</equalsverifier.version>
-    <findbugs.version>3.0.1</findbugs.version>
-    <groovy.version>2.5.3</groovy.version>
-    <gson.version>2.8.0</gson.version>
-    <guava.version>27.0.1-jre</guava.version>
-    <hamcrest.version>1.3</hamcrest.version>
-    <jackson.version>2.9.8</jackson.version>
-    <jmh.version>1.21</jmh.version>
-    <jna.version>4.5.1</jna.version>
-    <joda-time.version>2.10</joda-time.version>
-    <jopt-simple.version>5.0.2</jopt-simple.version>
-    <junit.jupiter.version>5.2.0</junit.jupiter.version>
-    <junit.platform.version>1.2.0</junit.platform.version>
-    <junit.version>4.12</junit.version>
+    <byte-buddy.version>1.10.18</byte-buddy.version>
+    <!-- Be sure to keep this version set to the version of the cmake-maven-plugin -->
+    <cmake-version>3.18.4</cmake-version>
+    <commons-beanutils.version>1.9.4</commons-beanutils.version>
+    <commons-cli.version>1.4</commons-cli.version>
+    <commons-codec.version>1.15</commons-codec.version>
+    <commons-collections4.version>4.4</commons-collections4.version>
+    <commons-compress.version>1.20</commons-compress.version>
+    <commons-configuration2.version>2.7</commons-configuration2.version>
+    <commons-io.version>2.8.0</commons-io.version>
+    <commons-lang3.version>3.11</commons-lang3.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <commons-math3.version>3.6.1</commons-math3.version>
+    <commons-pool2.version>2.9.0</commons-pool2.version>
+    <commons-text.version>1.9</commons-text.version>
+    <commons-csv.version>1.8</commons-csv.version>
+    <dom4j.version>2.1.3</dom4j.version>
+    <elasticsearch.version>7.10.0</elasticsearch.version>
+    <equalsverifier.version>3.5</equalsverifier.version>
+    <freemarker.version>2.3.30</freemarker.version>
+    <groovy.version>3.0.6</groovy.version>
+    <gson.version>2.8.6</gson.version>
+    <guava.version>30.0-jre</guava.version>
+    <hamcrest.version>2.2</hamcrest.version>
+    <httpclient.version>4.5.13</httpclient.version>
+    <httpcore.version>4.4.13</httpcore.version>
+    <jackson.version>2.11.3</jackson.version>
+    <jaxb.version>2.3.3</jaxb.version>
+    <jetty-util.version>9.4.32.v20200930</jetty-util.version>
+    <jna.version>5.3.1</jna.version>
+    <joda-time.version>2.10.8</joda-time.version>
+    <jserialcom.version>2.6.2</jserialcom.version>
+    <junit.jupiter.version>5.7.0</junit.jupiter.version>
+    <junit.platform.version>1.7.0</junit.platform.version>
     <log4j.version>2.11.1</log4j.version>
     <logback.version>1.2.3</logback.version>
-    <lucene.version>8.0.0</lucene.version>
-    <metrics-core.version>3.1.2</metrics-core.version>
-    <mockito.version>2.24.5</mockito.version>
-    <netty.version>4.1.35.Final</netty.version>
-    <netty-transport-jserialcomm.version>1.0.0</netty-transport-jserialcomm.version>
-    <owasp-dependency-check.version>5.0.0-M1</owasp-dependency-check.version>
-    <pcap4j.version>1.7.3</pcap4j.version>
-    <scala.version>2.12.6</scala.version>
-    <slf4j.version>1.7.25</slf4j.version>
-    <snakeyaml.version>1.23</snakeyaml.version>
-    <spock-reports.version>1.6.1</spock-reports.version>
-    <spock.version>1.2-groovy-2.5</spock.version>
-    <t-digest.version>3.2</t-digest.version>
-    <thrift.version>0.12.0</thrift.version>
+    <milo.version>0.5.4</milo.version>
+    <mockito.version>3.6.28</mockito.version>
+    <netty.version>4.1.54.Final</netty.version>
+    <owasp-dependency-check.version>6.0.3</owasp-dependency-check.version>
+    <pcap4j.version>1.8.2</pcap4j.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <thrift.version>0.13.0</thrift.version>
+    <vavr.version>0.10.3</vavr.version>
+    <xmlunit.version>2.8.1</xmlunit.version>
 
     <!-- Site properties -->
-    <asciidoctor.maven.plugin.version>2.0.0-RC.1</asciidoctor.maven.plugin.version>
-    <asciidoctorj.version>2.0.0</asciidoctorj.version>
-    <asciidoctorj.diagram.version>1.5.16</asciidoctorj.diagram.version>
-    <reflow.skin.version>1.5.0</reflow.skin.version>
-    <bootstrap.version>3.3.7</bootstrap.version>
-    <jquery.version>3.3.1</jquery.version>
-    <anchorjs.version>3.2.2</anchorjs.version>
-    <fontawesome.version>5.2.0</fontawesome.version>
+    <asciidoctor.maven.plugin.version>2.1.0</asciidoctor.maven.plugin.version>
+    <asciidoctorj.version>2.4.2</asciidoctorj.version>
+    <asciidoctorj.diagram.version>2.0.5</asciidoctorj.diagram.version>
   </properties>
 
   <modules>
+    <module>code-generation</module>
+
     <!-- Definition of the protocol message formats -->
     <module>protocols</module>
+
+    <!-- Build the Java part of plc4x -->
+    <module>plc4j</module>
 
     <!-- Tools needed throughout the build -->
     <module>tools</module>
   </modules>
 
-  <prerequisites>
-    <maven>${maven.version}</maven>
-  </prerequisites>
-
   <dependencyManagement>
     <dependencies>
-      <!--
-        Set to provided to ensure that these jars are never automatically
-        included. If required the used still can override it if it is needed. -->
+      <!--- Code-Generation related -->
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-        <scope>provided</scope>
+        <groupId>org.apache.plc4x.plugins</groupId>
+        <artifactId>plc4x-code-generation-types-base</artifactId>
+        <version>${plc4x-code-generation.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
-        <scope>provided</scope>
+        <groupId>org.apache.plc4x.plugins</groupId>
+        <artifactId>plc4x-code-generation-language-base</artifactId>
+        <version>${plc4x-code-generation.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.athaydes</groupId>
-        <artifactId>spock-reports</artifactId>
-        <version>${spock-reports.version}</version>
+        <groupId>org.apache.plc4x.plugins</groupId>
+        <artifactId>plc4x-code-generation-protocol-base</artifactId>
+        <version>${plc4x-code-generation.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>${antlr.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>${freemarker.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-cbor</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-smile</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-yaml</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>${findbugs.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.tdunning</groupId>
-        <artifactId>t-digest</artifactId>
-        <version>${t-digest.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>${metrics-core.version}</version>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>${netty.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
@@ -274,73 +226,24 @@
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http</artifactId>
-        <version>${netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
         <version>${netty.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-handler</artifactId>
-        <version>${netty.version}</version>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>${commons-beanutils.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-resolver</artifactId>
-        <version>${netty.version}</version>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>${commons-cli.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport</artifactId>
-        <version>${netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport-rxtx</artifactId>
-        <version>${netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jaxen</groupId>
-        <artifactId>jaxen</artifactId>
-        <version>1.1.6</version>
-      </dependency>
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda-time.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>${byte-buddy.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy-agent</artifactId>
-        <version>${byte-buddy.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>${jna.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jopt-simple</groupId>
-        <artifactId>jopt-simple</artifactId>
-        <version>${jopt-simple.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>nl.jqno.equalsverifier</groupId>
-        <artifactId>equalsverifier</artifactId>
-        <version>${equalsverifier.version}</version>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -349,19 +252,18 @@
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
         <version>${commons-configuration2.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-jexl3</artifactId>
-        <version>3.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -384,110 +286,82 @@
         <version>${commons-text.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.daffodil</groupId>
-        <artifactId>daffodil-japi_2.12</artifactId>
-        <version>${daffodil.version}</version>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>${commons-csv.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${awaitility.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.daffodil</groupId>
-        <artifactId>daffodil-lib_2.12</artifactId>
-        <version>${daffodil.version}</version>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility-proxy</artifactId>
+        <version>${awaitility.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda-time.version}</version>
+      </dependency>
+
+      <!-- For Either types ... -->
+      <dependency>
+        <groupId>io.vavr</groupId>
+        <artifactId>vavr</artifactId>
+        <version>${vavr.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.jinahya</groupId>
+        <artifactId>bit-io</artifactId>
+        <version>${bit-io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpclient.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.daffodil</groupId>
-        <artifactId>daffodil-runtime1_2.12</artifactId>
-        <version>${daffodil.version}</version>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${httpcore.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.pcap4j</groupId>
+        <artifactId>pcap4j-core</artifactId>
+        <version>${pcap4j.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.daffodil</groupId>
-        <artifactId>daffodil-tdml-lib_2.12</artifactId>
-        <version>${daffodil.version}</version>
+        <groupId>org.pcap4j</groupId>
+        <artifactId>pcap4j-packetfactory-static</artifactId>
+        <version>${pcap4j.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.daffodil</groupId>
-        <artifactId>daffodil-tdml-processor_2.12</artifactId>
-        <version>${daffodil.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-backward-codecs</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-grouping</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-highlighter</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-join</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-memory</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-misc</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queries</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-sandbox</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-spatial3d</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-spatial</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-spatial-extras</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-suggest</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
@@ -499,72 +373,82 @@
           </exclusion>
         </exclusions>
       </dependency>
+
       <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>${assertj.version}</version>
+        <groupId>net.objecthunter</groupId>
+        <artifactId>exp4j</artifactId>
+        <version>0.4.8</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.purejavacomm</groupId>
+        <artifactId>purejavacomm</artifactId>
+        <version>1.0.2.RELEASE</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcmail-jdk15on</artifactId>
-        <version>${bouncycastle.version}</version>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
-        <version>${bouncycastle.version}</version>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>${bouncycastle.version}</version>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy</artifactId>
-        <version>${groovy.version}</version>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-csv</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-test-junit5</artifactId>
-        <version>${groovy.version}</version>
-        <!-- Ensure we only use this in test -->
-        <scope>test</scope>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch</artifactId>
-        <version>${elasticsearch.version}</version>
+        <groupId>org.dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4j.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch-x-content</artifactId>
-        <version>${elasticsearch.version}</version>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${byte-buddy.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.elasticsearch.plugin</groupId>
-        <artifactId>transport-netty4-client</artifactId>
-        <version>${elasticsearch.version}</version>
+        <groupId>com.fazecast</groupId>
+        <artifactId>jSerialComm</artifactId>
+        <version>${jserialcom.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>com.github.snksoft</groupId>
-        <artifactId>crc</artifactId>
-        <version>${crc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>${hamcrest.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-library</artifactId>
-        <version>${hamcrest.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jdom</groupId>
-        <artifactId>jdom2</artifactId>
-        <version>2.0.6</version>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.jupiter.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -581,50 +465,23 @@
         <artifactId>junit-jupiter-params</artifactId>
         <version>${junit.jupiter.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
-        <version>${junit.jupiter.version}</version>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>${commons-logging.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
-        <version>${mockito.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjdk.jmh</groupId>
-        <artifactId>jmh-core</artifactId>
-        <version>${jmh.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openjdk.jmh</groupId>
-        <artifactId>jmh-generator-annprocess</artifactId>
-        <version>${jmh.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.pcap4j</groupId>
-        <artifactId>pcap4j-core</artifactId>
-        <version>${pcap4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.pcap4j</groupId>
-        <artifactId>pcap4j-packetfactory-static</artifactId>
-        <version>${pcap4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-library</artifactId>
-        <version>${scala.version}</version>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -637,25 +494,146 @@
         <version>${slf4j.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.spockframework</groupId>
-        <artifactId>spock-core</artifactId>
-        <version>${spock.version}</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcmail-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>${jetty-util.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>${hamcrest.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>${hamcrest.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>${hamcrest.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+
+      <!-- TODO: Eliminate the usage of AssertJ (OPM and OPC-UA Driver) -->
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>nl.jqno.equalsverifier</groupId>
+        <artifactId>equalsverifier</artifactId>
+        <version>${equalsverifier.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-test-junit5</artifactId>
+        <version>${groovy.version}</version>
+        <!-- Ensure we only use this in test -->
         <scope>test</scope>
       </dependency>
+
       <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${snakeyaml.version}</version>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-core</artifactId>
+        <version>${xmlunit.version}</version>
+      </dependency>
+
+      <!-- *****************************************************************************
+      **********************************************************************************
+      **                             Transitive dependencies                          **
+      **********************************************************************************
+      ****************************************************************************** -->
+
+      <dependency>
+        <groupId>org.apiguardian</groupId>
+        <artifactId>apiguardian-api</artifactId>
+        <version>${apiguardian.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.koc</groupId>
-        <artifactId>netty-transport-jserialcomm</artifactId>
-        <version>${netty-transport-jserialcomm.version}</version>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
       </dependency>
       <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>1.4.01</version>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-engine</artifactId>
+        <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>sdk-server</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>sdk-core</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>stack-core</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>stack-server</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>stack-client</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.milo</groupId>
+        <artifactId>dictionary-manager</artifactId>
+        <version>${milo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>3.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -666,7 +644,6 @@
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.1</version>
         <executions>
           <!-- Do some pre-build checks and report any findings to the user -->
           <execution>
@@ -680,7 +657,10 @@
               <source>${project.basedir}/src/main/script/prerequisiteCheck.groovy</source>
             </configuration>
           </execution>
-          <!-- Set some dynamic variables which are usefull for the site generation -->
+          <!--
+            Set some dynamic variables which are useful for the site generation and
+            generate an 'pom.adoc' file containing them in a format asciidoc can use.
+          -->
           <execution>
             <id>provide-custom-properties</id>
             <phase>pre-site</phase>
@@ -688,59 +668,22 @@
               <goal>execute</goal>
             </goals>
             <configuration>
-              <source>
-                print "\nCalculating some additional properties:"
-                // Get the current year
-                def currentYear = Calendar.getInstance().get(Calendar.YEAR) as String
-                print "\nCurrent year:                     " + currentYear
-                project.properties['current-year'] = currentYear
-
-                // Calculate some version related stuff
-                def currentVersion = project.version as String
-                def match = (currentVersion =~ /(\d+)\.(\d+)\.(\d+)(-SNAPSHOT)?/)
-                print "\nCurrent version:                  " + currentVersion
-                if(match.count >= 1) {
-                  def majorVersion = match[0][1] as Integer
-                  def minorVersion = match[0][2] as Integer
-                  def bugfixVersion = match[0][3] as Integer
-
-                  def currentFullVersion = majorVersion + "." + minorVersion + "." + bugfixVersion
-                  def currentShortVersion = majorVersion + "." + minorVersion
-                  def currentNextIncrementalVersion = majorVersion + "." + minorVersion + "." + (bugfixVersion + 1)
-                  def currentNextMinorVersion = majorVersion + "." + (minorVersion + 1) + ".0"
-
-                  print "\nCurrent full version:             " + currentFullVersion + " (current-full-version)"
-                  project.properties['current-full-version'] = currentFullVersion
-                  print "\nCurrent short version:            " + currentShortVersion + "   (current-short-version)"
-                  project.properties['current-short-version'] = currentShortVersion
-                  print "\nCurrent next incremental version: " + currentNextIncrementalVersion + " (current-next-incremental-version)"
-                  project.properties['current-next-incremental-version'] = currentNextIncrementalVersion
-                  print "\nCurrent next minor version:       " + currentNextMinorVersion + " (current-next-minor-version)"
-                  project.properties['current-next-minor-version'] = currentNextMinorVersion
-                }
-                print "\n"
-              </source>
+              <source>${project.basedir}/src/main/script/preSiteGeneration.groovy</source>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- Write all the properties into a file so we can access them from asciidoctor -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <executions>
-          <execution>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>write-project-properties</goal>
-            </goals>
-            <configuration>
-              <outputFile>${project.build.directory}/pom.adoc</outputFile>
-            </configuration>
-          </execution>
-        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <!-- Check if all source files have the required apache license headers -->
@@ -757,13 +700,26 @@
           </execution>
         </executions>
         <configuration>
+          <useMavenDefaultExcludes>true</useMavenDefaultExcludes>
           <excludes>
             <!-- Git related files -->
             <exclude>**/.git/**</exclude>
             <exclude>**/.gitignore</exclude>
+            <exclude>**/cmake-*/**</exclude>
+            <!-- License Files for other licenses -->
+            <exclude>**/UNLICENSE</exclude>
+            <!--
+              Explicitly exclude these files as I was unable
+              to add a new licenses to the configuration.
+            -->
+            <exclude>**/Expression.g4</exclude>
+            <exclude>**/KeyStoreLoader.java</exclude>
+            <exclude>**/OPCUAServer.java</exclude>
+            <exclude>**/Plc4xNamespace.java</exclude>
 
             <!-- Maven related files -->
             <exclude>**/target/**</exclude>
+            <exclude>target/**</exclude>
 
             <!-- Eclipse related files -->
             <exclude>**/.project</exclude>
@@ -777,24 +733,41 @@
 
             <!-- Wireshark Captures -->
             <exclude>**/*.pcap</exclude>
+            <exclude>**/*.pcapng</exclude>
+
+            <!-- JEVN local version files -->
+            <exclude>**/.java-version</exclude>
 
             <!-- Asciidoctor generated files -->
             <exclude>**/.asciidoctor/**</exclude>
 
             <!-- Jenkins build related files -->
             <exclude>.repository/**</exclude>
+            <exclude>local-snapshots-dir/**</exclude>
 
             <!-- Data files created by examples running an embedded elasticsearch -->
             <exclude>elasticsearch-data/**</exclude>
 
             <!-- JSON doesn't like comments -->
             <exclude>**/*.json</exclude>
+            <exclude>**/*.avsc</exclude>
 
             <!-- Output of the profiler maven extension -->
             <exclude>**/.profiler/**</exclude>
 
             <!-- CLion stuff (C++ IDE) -->
             <exclude>**/cmake-build-debug/**</exclude>
+            <exclude>**/*.make</exclude>
+            <exclude>**/*.cmake</exclude>
+            <exclude>**/*.internal</exclude>
+            <exclude>**/link.txt</exclude>
+            <!-- Not sure why I can't exclude all Makefile's from just the plc4c directory -->
+            <!-- exclude>**/Makefile</exclude -->
+            <exclude>**/Makefile</exclude>
+            <exclude>**/*.includecache</exclude>
+            <exclude>**/CMakeFiles/**</exclude>
+            <exclude>**/CMakeCache.txt</exclude>
+            <exclude>**/DartConfiguration.tcl</exclude>
 
             <!-- Stuff created during a plc4net build -->
             <exclude>**/obj/**</exclude>
@@ -804,15 +777,35 @@
 
             <!-- Temporary Python virtualenv files-->
             <exclude>**/venv/**</exclude>
+
+            <!-- Exclude a temp file needed by Docker -->
+            <exclude>project_version</exclude>
+
+            <!-- Exclude files generated by the go build system -->
+            <exclude>**/go.sum</exclude>
+
+            <!--exclude>plc4go/**</exclude-->
           </excludes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Generate the legally required text files in the jars -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.6.0</version>
         <executions>
           <execution>
             <id>process-resource-bundles</id>
@@ -821,8 +814,6 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <!-- TODO: For some reason the build seems to fail in conjunction with the dependency-plugin unpack goal, if enabled -->
-              <skip>true</skip>
               <resourceBundles>
                 <!-- Will generate META-INF/{DEPENDENCIES,LICENSE,NOTICE} -->
                 <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
@@ -834,6 +825,58 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version> <!--$NO-MVN-MAN-VER$-->
+        <executions>
+          <!-- Ensure we're not mixing dependency versions -->
+          <execution>
+            <id>enforce-version-convergence</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <dependencyConvergence />
+              </rules>
+            </configuration>
+          </execution>
+          <!--
+              Fails the build if classes are included from multiple
+              artifacts and these are not identical.
+          -->
+          <execution>
+            <id>enforce-ban-duplicate-classes</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <banDuplicateClasses>
+                  <scopes>
+                    <scope>compile</scope>
+                    <scope>provided</scope>
+                  </scopes>
+                  <findAllDuplicates>true</findAllDuplicates>
+                  <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                </banDuplicateClasses>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.2</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
       <!--
         ===================================
         ==                               ==
@@ -843,70 +886,7 @@
 
         Starting here the following plugins are used for generating the projects website.
 
-        Most of the complexity is due to the fact that we selected "localResouces" in the site.xml
-        This causes the generated output not to rely on external resources. Therefore we have to
-        manually take care of fetching and packaging these external resources with the generated site.
       -->
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <!-- Only execute this for the parent module -->
-            <inherited>false</inherited>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>io.github.devacfr.maven.skins</groupId>
-                  <artifactId>reflow-default-webdeps</artifactId>
-                  <version>${reflow.skin.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <includes>
-                    **/css/bootstrap.min.css,
-                    **/css/fontawesome/*,
-                    **/js/*.js,
-                    **/js/languages/*,
-                    **/js/styles/default.min.css
-                  </includes>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/site</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!--
-        Replace the bootstrap css with the version of the theme
-      -->
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>get-fontawesome</id>
-            <!-- Only execute this for the parent module -->
-            <inherited>false</inherited>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://use.fontawesome.com/releases/v${fontawesome.version}/fontawesome-free-${fontawesome.version}-web.zip</url>
-              <unpack>true</unpack>
-              <outputDirectory>${project.build.directory}/dependency/fontawesome</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -924,20 +904,6 @@
               <outputDirectory>${project.build.directory}/site</outputDirectory>
               <resources>
                 <resource>
-                  <directory>
-                    ${project.build.directory}/dependency/fontawesome/fontawesome-free-${fontawesome.version}-web
-                  </directory>
-                  <includes>
-                    <include>css/all.min.css</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>
-                    ${project.build.directory}/dependency/fontawesome/fontawesome-free-${fontawesome.version}-web/webfonts
-                  </directory>
-                  <targetPath>${project.build.directory}/site/fonts</targetPath>
-                </resource>
-                <resource>
                   <directory>${project.basedir}/src/site/resources-filtered</directory>
                   <filtering>true</filtering>
                   <targetPath>${project.build.directory}/site</targetPath>
@@ -945,56 +911,27 @@
               </resources>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-
-      <!--
-        The bootstrap uses "fonts" as directory for locating fonts and fontawesome uses "webfonts".
-        This plugin updates the css to also use "fonts".
-      -->
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>1.5.3</version>
-        <executions>
+          <!--
+            Copy the schemas that might be distributed throughout the codebase to a central "schemas"
+            directory so IDEs can automatically pull them in.
+          -->
           <execution>
-            <id>streamline-font-urls</id>
+            <id>copy-schemas</id>
             <!-- Only execute this for the parent module -->
             <inherited>false</inherited>
             <phase>pre-site</phase>
             <goals>
-              <goal>replace</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <file>${project.build.directory}/site/css/all.min.css</file>
-              <replacements>
-                <replacement>
-                  <token>../webfonts/</token>
-                  <value>../fonts/</value>
-                </replacement>
-              </replacements>
-            </configuration>
-          </execution>
-          <execution>
-            <id>convert-property-to-adoc</id>
-            <!-- Only execute this for the parent module -->
-            <inherited>false</inherited>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-            <configuration>
-              <file>${project.build.directory}/pom.adoc</file>
-              <replacements>
-                <replacement>
-                  <token>(.*)=(.*)</token>
-                  <value>\:$1\: $2</value>
-                </replacement>
-                <replacement>
-                  <token>#(.*)</token>
-                  <value>// $1</value>
-                </replacement>
-              </replacements>
+              <outputDirectory>${project.build.directory}/site</outputDirectory>
+              <resources>
+                <!-- Copy the resources for the test-suites -->
+                <resource>
+                  <directory>${project.basedir}/plc4j/utils/test-utils/src/main/resources/schemas</directory>
+                  <targetPath>${project.build.directory}/site/schemas</targetPath>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
@@ -1020,6 +957,7 @@
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
+          <version>0.13</version>
           <configuration>
             <!--
                 Make rat output the files with missing licensed directly into the
@@ -1032,20 +970,68 @@
 
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>properties-maven-plugin</artifactId>
+          <version>1.0.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-maven-plugin</artifactId>
+          <version>${antlr.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.plc4x.plugins</groupId>
+          <artifactId>plc4x-maven-plugin</artifactId>
+          <version>${plc4x-code-generation.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>buildnumber-maven-plugin</artifactId>
           <version>1.4</version>
         </plugin>
 
         <plugin>
+          <groupId>org.codehaus.gmaven</groupId>
+          <artifactId>groovy-maven-plugin</artifactId>
+          <version>2.1.1</version>
+        </plugin>
+
+        <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>4.1.0</version>
+          <version>5.1.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>4.3.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.google.code.maven-replacer-plugin</groupId>
+          <artifactId>replacer</artifactId>
+          <version>1.5.3</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.7.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.googlecode.maven-download-plugin</groupId>
+          <artifactId>download-maven-plugin</artifactId>
+          <version>1.6.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.2</version>
+          <version>0.8.6</version>
         </plugin>
 
         <plugin>
@@ -1061,7 +1047,26 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
+          <version>3.2.1</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -1076,22 +1081,44 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.3.0</version>
           <configuration>
             <finalName>apache-plc4x-${project.version}</finalName>
           </configuration>
         </plugin>
 
         <plugin>
-          <groupId>org.sonarsource.scanner.maven</groupId>
-          <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.6.0.1398</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.4</version>
+          <configuration>
+            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-uber-jar.${project.packaging}</outputFile>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+            </transformers>
+            <filters>
+              <filter>
+                <!--
+                  These files contain signatures for classes, omit them as in
+                  shaded archives this has cause quite some problems in the past.
+                -->
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>META-INF/*.SF</exclude>
+                  <exclude>META-INF/*.DSA</exclude>
+                  <exclude>META-INF/*.RSA</exclude>
+                </excludes>
+              </filter>
+            </filters>
+            <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+          </configuration>
         </plugin>
 
         <!-- Configure the Site generation -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
+          <version>3.9.1</version>
           <configuration>
             <!--templateFile>${session.executionRootDirectory}/src/site/template/site.vm</templateFile-->
             <generateReports>true</generateReports>
@@ -1117,35 +1144,6 @@
             </asciidoc>
           </configuration>
           <dependencies>
-            <!-- All dependencies needed by the reflow skin -->
-            <dependency>
-              <groupId>io.github.devacfr.maven.skins</groupId>
-              <artifactId>reflow-velocity-tools</artifactId>
-              <version>${reflow.skin.version}</version>
-            </dependency>
-
-            <!-- add support for scm/git site deployment -->
-            <dependency>
-              <groupId>org.apache.maven.wagon</groupId>
-              <artifactId>wagon-scm</artifactId>
-              <version>2.12</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-api</artifactId>
-              <version>1.9.5</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-manager-plexus</artifactId>
-              <version>1.9.5</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.scm</groupId>
-              <artifactId>maven-scm-provider-gitexe</artifactId>
-              <version>1.9.5</version>
-            </dependency>
-
             <!-- Add support for asciidoctor -->
             <dependency>
               <groupId>org.asciidoctor</groupId>
@@ -1168,12 +1166,25 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.2.0</version>
           <configuration>
             <!--
               This will suppress the generation of a hidden timestamp at the top of each generated html page
               and hopefully let the site generation nod to too big updates every time.
             -->
             <notimestamp>true</notimestamp>
+            <!--
+              Set the source level to 8 as otherwise with newer JDKs we're getting trouble.
+            -->
+            <source>8</source>
+            <!--
+              Disable the detection of links as we have some artifacts without api-docs and
+              the errors were polluting the build output.
+            -->
+            <detectLinks>false</detectLinks>
+            <validateLinks>false</validateLinks>
+            <failOnWarnings>false</failOnWarnings>
+            <failOnError>false</failOnError>
           </configuration>
         </plugin>
 
@@ -1184,15 +1195,52 @@
         </plugin>
 
         <plugin>
-          <groupId>com.buschmais.jqassistant</groupId>
-          <artifactId>jqassistant-maven-plugin</artifactId>
-          <version>1.6.0</version>
-        </plugin>
-
-        <plugin>
           <groupId>org.owasp</groupId>
           <artifactId>dependency-check-maven</artifactId>
           <version>${owasp-dependency-check.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.thrift.tools</groupId>
+          <artifactId>maven-thrift-plugin</artifactId>
+          <version>0.1.11</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.googlecode.cmake-maven-project</groupId>
+          <artifactId>cmake-maven-plugin</artifactId>
+          <version>3.18.4-b1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <!-- Tell the plugin to always release all modules using the same version -->
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <!-- Set the line separator to the unix style separator (Needed for reproducible builds -->
+            <!-- TODO: try to find out why antlr doesn't like the line.separator setting -->
+            <!--arguments>-Papache-release -Dline.separator='\n' ${arguments}</arguments-->
+            <arguments>-Papache-release ${arguments}</arguments>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.7.0.1746</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1289,7 +1337,7 @@
           </reportSet>
         </reportSets>
       </plugin-->
-    </plugins>
+     </plugins>
   </reporting>
 
   <!-- Make Snapshots of Apache projects available -->
@@ -1306,6 +1354,20 @@
     </repository>
   </repositories>
 
+  <!-- Make Snapshots of Apache plugins available -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache-snapshots</id>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <profiles>
     <!-- Allows skipping of the pre-flight-check as needed when deploying on jenkins -->
     <profile>
@@ -1318,7 +1380,7 @@
           <plugin>
             <groupId>org.codehaus.gmaven</groupId>
             <artifactId>groovy-maven-plugin</artifactId>
-            <version>2.1</version>
+            <version>2.1.1</version>
             <executions>
               <!-- Do some pre-build checks and report any findings to the user -->
               <execution>
@@ -1339,35 +1401,20 @@
         </plugins>
       </build>
     </profile>
-    <!-- Build PLC4X including the CPP modules -->
+
+    <!-- Build PLC4X including the C modules -->
     <profile>
-      <id>with-cpp</id>
+      <id>with-c</id>
       <modules>
-        <module>plc4cpp</module>
+        <module>plc4c</module>
       </modules>
     </profile>
 
-    <!-- Build PLC4X including the Java modules -->
+    <!-- Build PLC4X including the Go modules -->
     <profile>
-      <id>with-java</id>
+      <id>with-go</id>
       <modules>
-        <module>plc4j</module>
-      </modules>
-    </profile>
-
-    <!-- Build PLC4X including the .Net modules -->
-    <profile>
-      <id>with-dotnet</id>
-      <modules>
-        <module>plc4net</module>
-      </modules>
-    </profile>
-
-    <!-- Build PLC4X including the Python modules -->
-    <profile>
-      <id>with-python</id>
-      <modules>
-        <module>plc4py</module>
+        <module>plc4go</module>
       </modules>
     </profile>
 
@@ -1379,14 +1426,9 @@
       </modules>
     </profile>
 
-    <!-- Profile, which is used in sub-modules to enable Thrift related proxy modules -->
+    <!-- Profile for linux (Self-Enabling) -->
     <profile>
-      <id>with-proxies</id>
-    </profile>
-
-    <!-- Profile for linux -->
-    <profile>
-      <id>unix</id>
+      <id>os-unix</id>
       <activation>
         <os>
           <family>unix</family>
@@ -1395,19 +1437,22 @@
       <properties>
         <os.suffix>linux</os.suffix>
         <os.classifier>linux-x86_64</os.classifier>
+        <cmake.url>https://github.com/Kitware/CMake/releases/download/v${cmake-version}/cmake-${cmake-version}-Linux-x86_64.tar.gz</cmake.url>
+        <cmake.root>${project.build.directory}/cmake-${cmake-version}-Linux-x86_64/bin/</cmake.root>
         <cmake.generator>Unix Makefiles</cmake.generator>
-        <boost.url>https://dl.bintray.com/boostorg/release/${boost.version}/source/boost_${boost.version.underline}.tar.gz</boost.url>
+        <boost.url>https://boostorg.jfrog.io/artifactory/main/release/${boost.version}/source/boost_${boost.version.underline}.tar.gz</boost.url>
         <boost.bootstrap.executable>./bootstrap.sh</boost.bootstrap.executable>
         <boost.build.executable>./b2</boost.build.executable>
         <thrift.bootstrap.executable>./bootstrap.sh</thrift.bootstrap.executable>
         <thrift.configure.executable>./configure</thrift.configure.executable>
         <thrift.make.executable>make</thrift.make.executable>
         <thrift.compiler.executable>thrift</thrift.compiler.executable>
+        <gradlew.executable>./gradlew</gradlew.executable>
       </properties>
     </profile>
-    <!-- Profile for mac -->
+    <!-- Profile for mac (Self-Enabling) -->
     <profile>
-      <id>max</id>
+      <id>os-mac</id>
       <activation>
         <os>
           <family>mac</family>
@@ -1416,6 +1461,8 @@
       <properties>
         <os.suffix>mac</os.suffix>
         <os.classifier>mac-x86_64</os.classifier>
+        <cmake.url>https://github.com/Kitware/CMake/releases/download/v${cmake-version}/cmake-${cmake-version}-Darwin-x86_64.tar.gz</cmake.url>
+        <cmake.root>${project.build.directory}/cmake-${cmake-version}-Darwin-x86_64/CMake.app/Contents/bin</cmake.root>
         <cmake.generator>Unix Makefiles</cmake.generator>
         <boost.url>https://dl.bintray.com/boostorg/release/${boost.version}/source/boost_${boost.version.underline}.tar.gz</boost.url>
         <boost.bootstrap.executable>./bootstrap.sh</boost.bootstrap.executable>
@@ -1424,11 +1471,12 @@
         <thrift.configure.executable>./configure</thrift.configure.executable>
         <thrift.make.executable>make</thrift.make.executable>
         <thrift.compiler.executable>thrift</thrift.compiler.executable>
+        <gradlew.executable>./gradlew</gradlew.executable>
       </properties>
     </profile>
-    <!-- profile for windows -->
+    <!-- profile for windows (Self-Enabling) -->
     <profile>
-      <id>windows</id>
+      <id>os-windows</id>
       <activation>
         <os>
           <family>windows</family>
@@ -1437,6 +1485,8 @@
       <properties>
         <os.suffix>win</os.suffix>
         <os.classifier>windows-x86_64</os.classifier>
+        <cmake.url>https://github.com/Kitware/CMake/releases/download/v${cmake-version}/cmake-${cmake-version}-win64-x64.zip</cmake.url>
+        <cmake.root>${project.build.directory}/cmake-${cmake-version}-win64-x64/bin</cmake.root>
         <cmake.generator>MinGW Makefiles</cmake.generator>
         <boost.url>https://dl.bintray.com/boostorg/release/${boost.version}/source/boost_${boost.version.underline}.zip</boost.url>
         <boost.bootstrap.executable>bootstrap.bat</boost.bootstrap.executable>
@@ -1446,6 +1496,7 @@
         <thrift.configure.executable>configure</thrift.configure.executable>
         <thrift.make.executable>make</thrift.make.executable>
         <thrift.compiler.executable>thrift.exe</thrift.compiler.executable>
+        <gradlew.executable>gradlew.bat</gradlew.executable>
       </properties>
     </profile>
 
@@ -1487,102 +1538,8 @@
     </profile>
 
     <!--
-      This profile adds some additional checks and settings that should apply during development,
-      but could cause problems after that. As an example it would be impossible to build a released
-      version, if after the release CVEs were reported for one of its dependencies.
+      Self enabling fake-plugin configuration to help Eclipse use Maven right
     -->
-    <profile>
-      <id>development</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.0.0-M2</version> <!--$NO-MVN-MAN-VER$-->
-            <executions>
-              <!-- Make sure no dependencies are used for which known vulnerabilities exist. -->
-              <execution>
-                <id>sanity-checks</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <requireJavaVersion>
-                      <version>1.8.0</version>
-                    </requireJavaVersion>
-                    <!--reactorModuleConvergence/-->
-                  </rules>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <!--plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <failBuildOnCVSS>8</failBuildOnCVSS>
-            </configuration>
-          </plugin-->
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>with-jqassistant</id>
-      <build>
-        <plugins>
-          <!-- Plugin for analysing the project based on neo4j queries -->
-          <plugin>
-            <groupId>com.buschmais.jqassistant</groupId>
-            <artifactId>jqassistant-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>scan</goal>
-                  <goal>analyze</goal>
-                </goals>
-                <configuration>
-                  <rulesDirectory>${project.basedir}/src/jqassistant</rulesDirectory>
-                  <failOnSeverity>MAJOR</failOnSeverity>
-                  <warnOnSeverity>MINOR</warnOnSeverity>
-                  <scanIncludes>
-                    <scanInclude>
-                      <path>${project.basedir}/.git</path>
-                    </scanInclude>
-                  </scanIncludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <reporting>
-        <plugins>
-          <plugin>
-            <groupId>com.buschmais.jqassistant</groupId>
-            <artifactId>jqassistant-maven-plugin</artifactId>
-            <reportSets>
-              <reportSet>
-                <reports>
-                  <report>report</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-          </plugin>
-        </plugins>
-      </reporting>
-    </profile>
-
     <profile>
       <id>only-eclipse</id>
       <activation>
@@ -1641,7 +1598,7 @@
           <plugin>
             <groupId>net.nicoulaj.maven.plugins</groupId>
             <artifactId>checksum-maven-plugin</artifactId>
-            <version>1.8</version>
+            <version>1.9</version>
             <executions>
               <execution>
                 <goals>
@@ -1653,6 +1610,7 @@
               <algorithms>
                 <algorithm>SHA-512</algorithm>
               </algorithms>
+              <includeRelativePath>true</includeRelativePath>
               <fileSets>
                 <fileSet>
                   <directory>${project.build.directory}</directory>
