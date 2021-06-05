@@ -27,11 +27,11 @@ import org.apache.plc4x.java.utils.connectionpool.PooledPlcDriverManager;
 
 /**
  * This Example shows how to use OPM from plc4j via the @{@link PlcEntityManager}.
- * A @{@link PooledPlcDriverManager} is used to optimize the acces and to allow for automatic reconnection.
+ * A @{@link PooledPlcDriverManager} is used to optimize the access and to allow for automatic reconnection.
  *
  * The {@link PlcEntityManager} is similar to JPAs EntityManager.
  * The "connected" Entity (shootCounter) can be kept and passed around and stays connected in the sense that all calls
- * to a getter are forwared to the PLC.
+ * to a getter are forwarded to the PLC.
  * Finally, one can disconnect the Entity.
  *
  * This MT works against Tims S7 in Nürtingen.
