@@ -87,7 +87,7 @@
     <!--
       At least 3.3.3 required for camel-package-maven-plugin
     -->
-    <maven.version>3.3.3</maven.version>
+    <maven.version>3.8.1</maven.version>
 
     <java.version>1.8</java.version>
 
@@ -106,7 +106,7 @@
     <plc4x-code-generation.version>1.5.0-SNAPSHOT</plc4x-code-generation.version>
 
     <antlr.version>4.9.1</antlr.version>
-    <apiguardian.version>1.1.1</apiguardian.version>
+    <apiguardian.version>1.1.0</apiguardian.version>
     <assertj.version>3.18.1</assertj.version>
     <awaitility.version>3.0.0</awaitility.version>
     <!-- TODO: the currently available version is 2.0.5 and anything above 1.4.3 is no longer compatible with our code -->
@@ -141,7 +141,7 @@
     <hamcrest.version>2.2</hamcrest.version>
     <httpclient.version>4.5.13</httpclient.version>
     <httpcore.version>4.4.13</httpcore.version>
-    <jackson.version>2.12.3</jackson.version>
+    <jackson.version>2.11.3</jackson.version>
     <jaxb.version>2.3.3</jaxb.version>
     <jetty-util.version>9.4.32.v20200930</jetty-util.version>
     <jna.version>5.3.1</jna.version>
@@ -1007,7 +1007,7 @@
         <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>4.3.2</version>
+          <version>4.3.0</version>
         </plugin>
 
         <plugin>
